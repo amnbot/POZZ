@@ -1,0 +1,17 @@
+{
+    "os": "Linux-5.15.0-48-generic-x86_64-with-glibc2.35",
+    "python": "3.10.6",
+    "heartbeatAt": "2022-10-02T03:28:23.760802",
+    "startedAt": "2022-10-02T03:28:23.230755",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3060 Ti",
+    "gpu_count": 1,
+    "cpu_count": 16,
+    "cuda": null,
+    "args": null,
+    "state": "running",
+    "program": "<python with no main file>",
+    "host": "junkai-Z390-AORUS-PRO-WIFI",
+    "username": "junkai",
+    "executable": "/usr/bin/python3"
+}
