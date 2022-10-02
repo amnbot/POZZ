@@ -2,19 +2,35 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import torch
+import time
+
+# Download the helper library from https://www.twilio.com/docs/python/install
+import os
+from twilio.rest import Client
+
+
+# Find your Account SID and Auth Token at twilio.com/console
+# and set the environment variables. See http://twil.io/secure
+account_sid = "ACf5ee68c780ba5e39d1e191512b70c429"
+auth_token = "f3204942ab509bddac105b02dc06b801"
+client = Client(account_sid, auth_token)
+
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_pose = mp.solutions.pose
 
 
-model = torch.jit.load('model_scripted.ptrom')
+model = torch.jit.load('production/model_scripted.ptrom')
 model.eval()
 
 # For webcam input:
 cap = cv2.VideoCapture(0)
+rounds = 0
+rlen = 5
 with mp_pose.Pose(
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5) as pose:
+    lst = np.zeros((rlen))
     while cap.isOpened():
         success, image = cap.read()
         if not success:
@@ -40,7 +56,8 @@ with mp_pose.Pose(
 
             input = torch.tensor(data).flatten()
             out = model.forward(torch.reshape(input, (1, -1)))
-            print(torch.argmax(out))
+            out = torch.argmax(out)
+            # print(out)
 
             # Draw the pose annotation on the image.
             image.flags.writeable = True
@@ -54,6 +71,28 @@ with mp_pose.Pose(
             cv2.imshow('MediaPipe Pose', cv2.flip(image, 1))
             if cv2.waitKey(5) & 0xFF == 27:
                 break
+            time.sleep(1)
+
+            lst[rounds] = out
+            print(lst)
+            # print(out)
+            if rounds == len(lst) - 1:
+                print("slt ben genre t juste nul nn?")
+                if np.mean(lst) >= 0.8:
+                    message = client.messages \
+                        .create(
+                            body='You should fix your posture, it is pretty bad!',
+                            from_='+17402736640',
+                            to='+15147028472'
+                        )
+
+                    print(message.sid)
+
+                lst = np.zeros((rlen))
+                rounds = 0
+            rounds += 1
         except:
             print("Ya r fdp qcq tu me racontes la")
+            
+
 cap.release()
