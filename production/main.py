@@ -11,8 +11,8 @@ from twilio.rest import Client
 
 # Find your Account SID and Auth Token at twilio.com/console
 # and set the environment variables. See http://twil.io/secure
-account_sid = "ACf5ee68c780ba5e39d1e191512b70c429"
-auth_token = "f3204942ab509bddac105b02dc06b801"
+account_sid = "sid"
+auth_token = "token"
 client = Client(account_sid, auth_token)
 
 mp_drawing = mp.solutions.drawing_utils
